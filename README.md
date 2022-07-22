@@ -7,6 +7,6 @@ Get a rails app ready with Doker config, Bootstrap, Simple form, debugging gems 
 ```bash
 rails new \
   -j webpack \
-  -m https://raw.githubusercontent.com/hospimedia/rails-templates/main/config.rb \
+  -m https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config.rb?token=GHSAT0AAAAAABWUJ6EENCA6SLZONKYDRMWQYW2Q73A \
   CHANGE_THIS_TO_YOUR_RAILS_APP_NAME
 ```
