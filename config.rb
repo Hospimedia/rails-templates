@@ -5,11 +5,11 @@ run "if uname | grep -q 'Darwin'; then pgrep spring | xargs kill -9; fi"
 inject_into_file "Gemfile", before: "group :development, :test do" do
   <<~RUBY
     gem "autoprefixer-rails"
-    gem "font-awesome-sass", "~> 6.1"
-    gem "simple_form", github: "heartcombo/simple_form"
     gem 'mysql2', '~> 0.5'
     gem 'rack-cors', '~> 1.1', '>= 1.1.1'
     gem 'rest-client', '~> 2.1.0'
+    gem "font-awesome-sass", "~> 6.1"
+    gem "simple_form", github: "heartcombo/simple_form"
   RUBY
 end
 
@@ -33,7 +33,6 @@ end
 
 # Layout
 ########################################
-
 gsub_file(
   "app/views/layouts/application.html.erb",
   '<meta name="viewport" content="width=device-width,initial-scale=1">',
@@ -89,13 +88,14 @@ after_bundle do
 
   # Doker
   ########################################
-  run "touch 'docker-compose.dev.yml'"
+
   
   # Testing
   ########################################
   run "mkdir 'spec/support'"
   run "touch 'spec/support/factory_bot.rb'"
   run "touch 'spec/support/chrome.rb'"
+  run "touch 'spec/factories.rb'"
   
   append_file ".rspec", <<~TXT
     --format documentation
@@ -109,7 +109,7 @@ after_bundle do
     RUBY
   end
   
-   inject_into_file "spec/support/chrome.rb" do
+  inject_into_file "spec/support/chrome.rb" do
     <<~RUBY
       RSpec.configure do |config|
         config.before(:each, type: :system) do
@@ -120,6 +120,13 @@ after_bundle do
           end
         end
       end
+    RUBY
+  end
+
+  inject_into_file "spec/rails_helper.rb", after: "require 'spec_helper'" do
+    <<-RUBY
+      require_relative 'support/factory_bot'
+      require_relative 'support/chrome'
     RUBY
   end
 

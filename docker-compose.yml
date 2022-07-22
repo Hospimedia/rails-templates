@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USER: ${DOCKER_APP_USER:-root}
+        HOME: ${DOCKER_APP_HOME:-/root}
+        GROUP_ID: ${DOCKER_APP_GROUP_ID:-0}
+        USER_ID: ${DOCKER_APP_USER_ID:-0}
+    networks:
+      - hospimedia
+    command: bundle exec puma -C config/puma.rb
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=CHANGE_PROJECT_NAME"
+      - "traefik.frontend.rule=Host:CHANGE_PROJECT_NAME"
+    volumes:
+      - .:${DOCKER_APP_HOME:-/root}/app:rw,cached
+      - $SSH_AUTH_SOCK:/ssh-agent
+    environment:
+      SSH_AUTH_SOCK: /ssh-agent
+      BUNDLE_PATH: .bundle
+      BUNDLE_DISABLE_SHARED_GEMS: '1'
+      DATABASE_RESET: "true"
+      DATABASE_NAME: "CHANGE_PROJECT_NAME_development"
+      DATABASE_USERNAME: "root"
+      DATABASE_PASSWORD: "admin"
+      DATABASE_HOST: "mariadb_10"
+      DATABASE_PORT: "3306"
+      AUTH_SERVICE_ID: ""
+
+networks:
+  hospimedia:
+    external: true
