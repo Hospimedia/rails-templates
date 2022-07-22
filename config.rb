@@ -23,6 +23,21 @@ end
 
 gsub_file("Gemfile", '# gem "sassc-rails"', 'gem "sassc-rails"')
 
+# Configs
+########################################
+inject_into_file "config/application.rb", after: '# config.eager_load_paths << Rails.root.join("extras")' do
+  <<~RUBY
+  
+    config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
+    config.i18n.default_locale = :fr
+  
+    config.time_zone = "Paris"
+    config.active_record.default_timezone = :local
+  RUBY
+end
+
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/fr.yml?token=GHSAT0AAAAAABWUJ6EFQ4N3UIXQKYRKVGKAYW2XEHA > config/locales/fr.yml"
+
 # Assets
 ########################################
 inject_into_file "config/initializers/assets.rb", before: "# Precompile additional assets." do
@@ -68,6 +83,13 @@ after_bundle do
   generate("simple_form:install", "--bootstrap")
   generate("rspec:install")
 
+  # Doker
+  ########################################
+  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/Dockerfile?token=GHSAT0AAAAAABWUJ6EFQ4N3UIXQKYRKVGKAYW2XEHA > Dockerfile"
+  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.dev.yml?token=GHSAT0AAAAAABWUJ6EEHR3FP53NG4K4OPN6YW2XFAA > docker-compose.dev.yml"
+  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.yml?token=GHSAT0AAAAAABWUJ6EEYIV66RQBNXOLJAGKYW2XFZA > docker-compose.yml"
+  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/start-app.sh?token=GHSAT0AAAAAABWUJ6EFGNNQ2HVQLNIQBJIWYW2XGRA > start-app.sh"
+
   # Gitignore
   ########################################
   append_file ".gitignore", <<~TXT
@@ -85,10 +107,6 @@ after_bundle do
   append_file "app/javascript/application.js", <<~JS
     import "bootstrap"
   JS
-
-  # Doker
-  ########################################
-
   
   # Testing
   ########################################
