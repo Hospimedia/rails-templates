@@ -17,6 +17,7 @@ end
 inject_into_file "Gemfile", after: 'gem "debug", platforms: %i[ mri mingw x64_mingw ]' do
 
   <<-RUBY
+  
   gem 'byebug', '~> 9.0', '>= 9.0.5'
   gem "rspec-rails"
   gem "factory_bot_rails"
@@ -97,7 +98,7 @@ after_bundle do
   # Gitignore
   ########################################
   append_file ".gitignore", <<~TXT
-  
+
     # Ignore file containing credentials.
     docker-compose.dev.yml
 
@@ -115,7 +116,7 @@ after_bundle do
   
   # Testing
   ########################################
-  generate("rspec:install")
+  rails_command "rspec:install"
   
   run "mkdir 'spec/support'"
   run "touch 'spec/support/factory_bot.rb'"
