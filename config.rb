@@ -124,16 +124,14 @@ after_bundle do
 
   # Yarn
   ########################################
-  # run "yarn add bootstrap @popperjs/core"
-  run "yarn add bootstrap @popperjs/core"
-  # append_file "app/javascript/application.js", <<~JS
-  #   import "bootstrap"
-  # JS
-  
+  run "./dev.sh bundle exec yarn add bootstrap @popperjs/core"
+  append_file "app/javascript/application.js", <<~JS
+    import "bootstrap"
+  JS
+
   # Testing
   ########################################
-  # rails_command "rspec:install"
-  run "rails g rspec:install"
+  run "./dev.sh bundle exec rails g rspec:install"
   run "mkdir 'spec/support'"
   run "touch 'spec/support/factory_bot.rb'"
   run "touch 'spec/support/chrome.rb'"
@@ -167,6 +165,7 @@ after_bundle do
 
   inject_into_file "spec/rails_helper.rb", after: "require 'spec_helper'" do
     <<-RUBY
+
       require_relative 'support/factory_bot'
       require_relative 'support/chrome'
     RUBY
