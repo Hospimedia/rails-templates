@@ -15,8 +15,8 @@ services:
     command: bundle exec puma -C config/puma.rb
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=CHANGE_PROJECT_NAME"
-      - "traefik.frontend.rule=Host:CHANGE_PROJECT_NAME"
+      - "traefik.backend=headerservice"
+      - "traefik.frontend.rule=Host:headerservice.dave"
     volumes:
       - .:${DOCKER_APP_HOME:-/root}/app:rw,cached
       - $SSH_AUTH_SOCK:/ssh-agent
@@ -25,7 +25,7 @@ services:
       BUNDLE_PATH: .bundle
       BUNDLE_DISABLE_SHARED_GEMS: '1'
       DATABASE_RESET: "true"
-      DATABASE_NAME: "CHANGE_PROJECT_NAME_development"
+      DATABASE_NAME: "headerservice_development"
       DATABASE_USERNAME: "root"
       DATABASE_PASSWORD: "admin"
       DATABASE_HOST: "mariadb_10"

@@ -93,7 +93,8 @@ after_bundle do
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/start-app.sh > start-app.sh"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/dev.sh > dev.sh"
 
-  run "chmod u+x dev.sh"
+  run "chmod 775 dev.sh"
+  run "chmod 775 start-app.sh"
 
   # Gitignore
   ########################################
