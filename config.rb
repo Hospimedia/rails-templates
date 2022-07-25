@@ -122,6 +122,10 @@ after_bundle do
 
   run "./dev.sh up --build"
 
+  # Simple Form
+  ########################################
+  run "./dev.sh bundle exec rails generate simple_form:install --bootstrap"
+
   # Yarn
   ########################################
   run "./dev.sh bundle exec yarn add bootstrap @popperjs/core"
