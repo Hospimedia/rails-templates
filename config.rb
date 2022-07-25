@@ -16,6 +16,7 @@ end
 
 inject_into_file "Gemfile", after: 'gem "debug", platforms: %i[ mri mingw x64_mingw ]' do
 <<-RUBY
+
   gem 'byebug', '~> 9.0', '>= 9.0.5'
   gem "rspec-rails"
   gem "factory_bot_rails"
@@ -29,14 +30,13 @@ gsub_file("Gemfile", 'gem "sqlite3", "~> 1.4"', '# gem "sqlite3", "~> 1.4"')
 # Configs
 ########################################
 inject_into_file "config/application.rb", after: '# config.eager_load_paths << Rails.root.join("extras")' do
-  <<~RUBY
-  
+      <<~RUBY
         config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
         config.i18n.default_locale = :fr
-  
+        
         config.time_zone = "Paris"
         config.active_record.default_timezone = :local
-  RUBY
+      RUBY
 end
 
 run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/fr.yml > config/locales/fr.yml"
