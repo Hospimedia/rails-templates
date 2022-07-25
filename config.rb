@@ -93,6 +93,7 @@ after_bundle do
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.dev.yml > docker-compose.dev.yml"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.yml > docker-compose.yml"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/start-app.sh > start-app.sh"
+  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/dev.sh > dev.sh"
 
   # Gitignore
   ########################################

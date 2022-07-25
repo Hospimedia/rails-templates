@@ -12,4 +12,7 @@ rails new \
 ```
 
 # Setup du projet
-- 
+- config/database.yml >> changer le nom de la DB de test
+- docker-compose.yml >> changer le nom du projet dans le fichier docker-compose.yml
+- créer la DB dans phpMyAdmin avec le nom choisi dans le docker-compose
+- Ajouter le nom de domaine dans /etc/hosts
