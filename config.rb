@@ -15,13 +15,12 @@ inject_into_file "Gemfile", before: "group :development, :test do" do
 end
 
 inject_into_file "Gemfile", after: 'gem "debug", platforms: %i[ mri mingw x64_mingw ]' do
-  <<-RUBY
-
-    gem 'byebug', '~> 9.0', '>= 9.0.5'
-    gem "rspec-rails"
-    gem "factory_bot_rails"
-    gem "faker"
-  RUBY
+<<-RUBY
+  gem 'byebug', '~> 9.0', '>= 9.0.5'
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+  gem "faker"
+RUBY
 end
 
 gsub_file("Gemfile", '# gem "sassc-rails"', 'gem "sassc-rails"')
@@ -32,11 +31,11 @@ gsub_file("Gemfile", 'gem "sqlite3", "~> 1.4"', '# gem "sqlite3", "~> 1.4"')
 inject_into_file "config/application.rb", after: '# config.eager_load_paths << Rails.root.join("extras")' do
   <<~RUBY
   
-    config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
-    config.i18n.default_locale = :fr
+        config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
+        config.i18n.default_locale = :fr
   
-    config.time_zone = "Paris"
-    config.active_record.default_timezone = :local
+        config.time_zone = "Paris"
+        config.active_record.default_timezone = :local
   RUBY
 end
 
@@ -47,6 +46,7 @@ run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/f
 inject_into_file "config/initializers/assets.rb", before: "# Precompile additional assets." do
   <<~RUBY
     Rails.application.config.assets.paths << Rails.root.join("node_modules")
+
   RUBY
 end
 
