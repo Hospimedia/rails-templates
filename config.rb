@@ -17,11 +17,10 @@ end
 inject_into_file "Gemfile", after: 'gem "debug", platforms: %i[ mri mingw x64_mingw ]' do
 
   <<-RUBY
-
-    gem 'byebug', '~> 9.0', '>= 9.0.5'
-    gem "rspec-rails"
-    gem "factory_bot_rails"
-    gem "faker"
+  gem 'byebug', '~> 9.0', '>= 9.0.5'
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+  gem "faker"
   RUBY
 end
 
@@ -85,7 +84,8 @@ after_bundle do
   # Generators: db + simple form + pages controller
   ########################################
   rails_command "db:drop db:create db:migrate"
-  generate("simple_form:install", "--bootstrap")
+  rails_command "generate simple_form:install"
+  # generate("simple_form:install", "--bootstrap")
 
   # Doker
   ########################################
@@ -97,6 +97,7 @@ after_bundle do
   # Gitignore
   ########################################
   append_file ".gitignore", <<~TXT
+  
     # Ignore file containing credentials.
     docker-compose.dev.yml
 
