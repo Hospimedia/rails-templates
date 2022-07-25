@@ -30,13 +30,13 @@ gsub_file("Gemfile", 'gem "sqlite3", "~> 1.4"', '# gem "sqlite3", "~> 1.4"')
 # Configs
 ########################################
 inject_into_file "config/application.rb", after: '# config.eager_load_paths << Rails.root.join("extras")' do
-      <<~RUBY
-        config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
-        config.i18n.default_locale = :fr
-        
-        config.time_zone = "Paris"
-        config.active_record.default_timezone = :local
-      RUBY
+<<~RUBY
+      config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
+      config.i18n.default_locale = :fr
+      
+      config.time_zone = "Paris"
+      config.active_record.default_timezone = :local
+RUBY
 end
 
 run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/fr.yml > config/locales/fr.yml"
@@ -83,8 +83,7 @@ environment generators
 after_bundle do
   # Generators: db + simple form + pages controller
   ########################################
-  rails_command "db:drop db:create db:migrate"
-  rails_command "generate simple_form:install"
+  # rails_command "db:drop db:create db:migrate"
   # generate("simple_form:install", "--bootstrap")
 
   # Doker
@@ -108,52 +107,52 @@ after_bundle do
 
   # Yarn
   ########################################
-  run "yarn add bootstrap @popperjs/core"
-  append_file "app/javascript/application.js", <<~JS
-    import "bootstrap"
-  JS
+  # run "yarn add bootstrap @popperjs/core"
+  # append_file "app/javascript/application.js", <<~JS
+  #   import "bootstrap"
+  # JS
   
   # Testing
   ########################################
-  rails_command "rspec:install"
+  # rails_command "rspec:install"
   
-  run "mkdir 'spec/support'"
-  run "touch 'spec/support/factory_bot.rb'"
-  run "touch 'spec/support/chrome.rb'"
-  run "touch 'spec/factories.rb'"
+  # run "mkdir 'spec/support'"
+  # run "touch 'spec/support/factory_bot.rb'"
+  # run "touch 'spec/support/chrome.rb'"
+  # run "touch 'spec/factories.rb'"
   
-  append_file ".rspec", <<~TXT
-    --format documentation
-  TXT
+  # append_file ".rspec", <<~TXT
+  #   --format documentation
+  # TXT
   
-  inject_into_file "spec/support/factory_bot.rb" do
-    <<~RUBY
-      RSpec.configure do |config|
-        config.include FactoryBot::Syntax::Methods
-      end
-    RUBY
-  end
+  # inject_into_file "spec/support/factory_bot.rb" do
+  #   <<~RUBY
+  #     RSpec.configure do |config|
+  #       config.include FactoryBot::Syntax::Methods
+  #     end
+  #   RUBY
+  # end
   
-  inject_into_file "spec/support/chrome.rb" do
-    <<~RUBY
-      RSpec.configure do |config|
-        config.before(:each, type: :system) do
-          if ENV["SHOW_BROWSER"] == "true"
-            driven_by :selenium_chrome
-          else
-            driven_by :selenium, using: :headless_chrome, screen_size: [1400, 1400]
-          end
-        end
-      end
-    RUBY
-  end
+  # inject_into_file "spec/support/chrome.rb" do
+  #   <<~RUBY
+  #     RSpec.configure do |config|
+  #       config.before(:each, type: :system) do
+  #         if ENV["SHOW_BROWSER"] == "true"
+  #           driven_by :selenium_chrome
+  #         else
+  #           driven_by :selenium, using: :headless_chrome, screen_size: [1400, 1400]
+  #         end
+  #       end
+  #     end
+  #   RUBY
+  # end
 
-  inject_into_file "spec/rails_helper.rb", after: "require 'spec_helper'" do
-    <<-RUBY
-      require_relative 'support/factory_bot'
-      require_relative 'support/chrome'
-    RUBY
-  end
+  # inject_into_file "spec/rails_helper.rb", after: "require 'spec_helper'" do
+  #   <<-RUBY
+  #     require_relative 'support/factory_bot'
+  #     require_relative 'support/chrome'
+  #   RUBY
+  # end
 
   # Git
   ########################################

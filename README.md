@@ -10,3 +10,6 @@ rails new \
   -m https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config.rb \
   CHANGE_THIS_TO_YOUR_RAILS_APP_NAME
 ```
+
+# Setup du projet
+- 
