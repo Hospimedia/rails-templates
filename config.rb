@@ -88,6 +88,7 @@ after_bundle do
 
   # Doker
   ########################################
+  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/database.yml > config/database.yml"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/Dockerfile > Dockerfile"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.dev.yml > docker-compose.dev.yml"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.yml > docker-compose.yml"
