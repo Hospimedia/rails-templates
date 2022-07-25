@@ -95,6 +95,19 @@ after_bundle do
 
   run "chmod 775 dev.sh start-app.sh"
 
+  inject_into_file "config/puma.rb", before: 'port ENV.fetch("PORT") { 3000 }' do
+    <<~RUBY
+      set_default_host '0.0.0.0'
+    RUBY
+  end
+
+  inject_into_file "config/environments/development.rb", after: "# config.action_cable.disable_request_forgery_protection = true" do
+    <<~RUBY
+
+      config.hosts << "headerservice.dave"
+    RUBY
+  end
+
   # Gitignore
   ########################################
   append_file ".gitignore", <<~TXT
@@ -112,7 +125,7 @@ after_bundle do
   # Yarn
   ########################################
   # run "yarn add bootstrap @popperjs/core"
-  run "./dev.sh bundle exec yarn add bootstrap @popperjs/core"
+  run "yarn add bootstrap @popperjs/core"
   # append_file "app/javascript/application.js", <<~JS
   #   import "bootstrap"
   # JS
@@ -120,7 +133,7 @@ after_bundle do
   # Testing
   ########################################
   # rails_command "rspec:install"
-  run "./dev.sh bundle exec rails g rspec:install"
+  run "rails g rspec:install"
   run "mkdir 'spec/support'"
   run "touch 'spec/support/factory_bot.rb'"
   run "touch 'spec/support/chrome.rb'"
