@@ -7,6 +7,7 @@ Get a rails app ready with Doker config, Bootstrap, Simple form, debugging gems 
 ```bash
 rails new \
   -j webpack \
+  --skip-test \
   -m https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config.rb \
   CHANGE_THIS_TO_YOUR_RAILS_APP_NAME
 ```
@@ -15,4 +16,4 @@ rails new \
 - config/database.yml >> changer le nom de la DB de test
 - docker-compose.yml >> changer le nom du projet dans le fichier docker-compose.yml
 - créer la DB dans phpMyAdmin avec le nom choisi dans le docker-compose
-- Ajouter le nom de domaine dans /etc/hosts
+- Ajouter le nom de domain dans /etc/hosts
