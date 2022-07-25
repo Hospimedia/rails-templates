@@ -30,7 +30,6 @@ services:
       DATABASE_PASSWORD: "admin"
       DATABASE_HOST: "mariadb_10"
       DATABASE_PORT: "3306"
-      AUTH_SERVICE_ID: ""
 
 networks:
   hospimedia:

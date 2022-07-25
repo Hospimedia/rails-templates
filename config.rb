@@ -36,7 +36,7 @@ inject_into_file "config/application.rb", after: '# config.eager_load_paths << R
   RUBY
 end
 
-run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/fr.yml?token=GHSAT0AAAAAABWUJ6EFQ4N3UIXQKYRKVGKAYW2XEHA > config/locales/fr.yml"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/fr.yml > config/locales/fr.yml"
 
 # Assets
 ########################################
@@ -81,14 +81,13 @@ after_bundle do
   ########################################
   rails_command "db:drop db:create db:migrate"
   generate("simple_form:install", "--bootstrap")
-  generate("rspec:install")
 
   # Doker
   ########################################
-  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/Dockerfile?token=GHSAT0AAAAAABWUJ6EFQ4N3UIXQKYRKVGKAYW2XEHA > Dockerfile"
-  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.dev.yml?token=GHSAT0AAAAAABWUJ6EEHR3FP53NG4K4OPN6YW2XFAA > docker-compose.dev.yml"
-  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.yml?token=GHSAT0AAAAAABWUJ6EEYIV66RQBNXOLJAGKYW2XFZA > docker-compose.yml"
-  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/start-app.sh?token=GHSAT0AAAAAABWUJ6EFGNNQ2HVQLNIQBJIWYW2XGRA > start-app.sh"
+  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/Dockerfile > Dockerfile"
+  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.dev.yml > docker-compose.dev.yml"
+  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.yml > docker-compose.yml"
+  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/start-app.sh > start-app.sh"
 
   # Gitignore
   ########################################
@@ -110,6 +109,8 @@ after_bundle do
   
   # Testing
   ########################################
+  generate("rspec:install")
+  
   run "mkdir 'spec/support'"
   run "touch 'spec/support/factory_bot.rb'"
   run "touch 'spec/support/chrome.rb'"
