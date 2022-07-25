@@ -81,8 +81,6 @@ environment generators
 # After bundle
 ########################################
 after_bundle do
-  # Generators: db + simple form + pages controller
-  ########################################
   # rails_command "db:drop db:create db:migrate"
   # generate("simple_form:install", "--bootstrap")
 
@@ -94,6 +92,8 @@ after_bundle do
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.yml > docker-compose.yml"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/start-app.sh > start-app.sh"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/dev.sh > dev.sh"
+
+  run "chmod u+x dev.sh"
 
   # Gitignore
   ########################################
