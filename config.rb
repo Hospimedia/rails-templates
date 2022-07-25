@@ -81,9 +81,6 @@ environment generators
 # After bundle
 ########################################
 after_bundle do
-  # rails_command "db:drop db:create db:migrate"
-  # generate("simple_form:install", "--bootstrap")
-
   # Doker
   ########################################
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/database.yml > config/database.yml"
@@ -131,7 +128,8 @@ after_bundle do
 
   # Simple Form
   ########################################
-  run "./dev.sh bundle exec rails g simple_form:install --bootstrap"
+  generate("simple_form:install", "--bootstrap")
+  # run "./dev.sh bundle exec rails g simple_form:install --bootstrap"
 
   # Testing
   ########################################
