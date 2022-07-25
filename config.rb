@@ -133,7 +133,8 @@ after_bundle do
 
   # Testing
   ########################################
-  run "./dev.sh bundle exec rails g rspec:install"
+  generate("rspec:install")
+  # run "./dev.sh bundle exec rails g rspec:install"
   run "mkdir 'spec/support'"
   run "touch 'spec/support/factory_bot.rb'"
   run "touch 'spec/support/chrome.rb'"
