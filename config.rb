@@ -27,6 +27,18 @@ end
 gsub_file("Gemfile", '# gem "sassc-rails"', 'gem "sassc-rails"')
 gsub_file("Gemfile", 'gem "sqlite3", "~> 1.4"', '# gem "sqlite3", "~> 1.4"')
 
+# Configs
+########################################
+configs = <<~RUBY
+  config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
+  config.i18n.default_locale = :fr
+  config.time_zone = "Paris"
+  config.active_record.default_timezone = :local
+
+RUBY
+
+environment configs
+
 # Generators
 ########################################
 generators = <<~RUBY
@@ -40,31 +52,19 @@ RUBY
 
 environment generators
 
-# Configs
-########################################
-configs = <<~RUBY
-  config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
-  config.i18n.default_locale = :fr
-  config.time_zone = "Paris"
-  config.active_record.default_timezone = :local
-
-RUBY
-
-environment configs, before: '# config.eager_load_paths << Rails.root.join("extras")'
-
-run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/fr.yml > config/locales/fr.yml"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config/fr.yml > config/locales/fr.yml"
 
 # Doker
 ########################################
 custom_db_name = ask("What do you want to call the db ?")
 custom_domain_name = ask("What do you want to call the domain ?")
 
-run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/database.yml > config/database.yml"
-run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/Dockerfile > Dockerfile"
-run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.dev.yml > docker-compose.dev.yml"
-run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.yml > docker-compose.yml"
-run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/start-app.sh > start-app.sh"
-run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/dev.sh > dev.sh"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config/database.yml > config/database.yml"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker/Dockerfile > Dockerfile"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker/docker-compose.dev.yml > docker-compose.dev.yml"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker/docker-compose.yml > docker-compose.yml"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker/start-app.sh > start-app.sh"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker/dev.sh > dev.sh"
 
 gsub_file("config/database.yml", "CHANGE_DB_NAME", "#{custom_db_name}")
 gsub_file("docker-compose.yml", "traefik.backend=CHANGE_NAME", "traefik.backend=#{custom_db_name}")
@@ -90,6 +90,92 @@ run "sudo nano /etc/hosts" if yes?("Add now domain name in your /etc/hosts ? (Yo
 
 # Assets
 ########################################
+run "rm -rf app/assets/stylesheets"
+run "rm -rf vendor"
+
+file "app/assets/stylesheets/application.scss", <<~TXT
+  // Graphical variables
+  @import "config/fonts";
+  @import "config/colors";
+  @import "config/bootstrap_variables";
+
+  // External libraries
+  @import "bootstrap/scss/bootstrap";
+  @import "font-awesome";
+
+  // Your CSS partials
+  @import "components/index";
+
+TXT
+
+file "app/assets/stylesheets/components/_index.scss", <<~TXT
+  // Import your components CSS files here.
+
+TXT
+
+file "app/assets/stylesheets/config/_fonts.scss", <<~TXT
+  // Import Google fonts
+  @import url('https://fonts.googleapis.com/css?family=Nunito:400,700|Work+Sans:400,700&display=swap');
+
+  // Define fonts for body and headers
+  $body-font: "Work Sans", "Helvetica", "sans-serif";
+  $headers-font: "Nunito", "Helvetica", "sans-serif";
+
+  // To use a font file (.woff) uncomment following lines
+  // @font-face {
+  //   font-family: "Font Name";
+  //   src: font-url('FontFile.eot');
+  //   src: font-url('FontFile.eot?#iefix') format('embedded-opentype'),
+  //        font-url('FontFile.woff') format('woff'),
+  //        font-url('FontFile.ttf') format('truetype')
+  // }
+  // $my-font: "Font Name";
+
+TXT
+
+file "app/assets/stylesheets/config/_colors.scss", <<~TXT
+  // Define variables for your color scheme
+
+  // For example:
+  $red: #FD1015;
+  $blue: #0D6EFD;
+  $yellow: #FFC65A;
+  $orange: #E67E22;
+  $green: #1EDD88;
+  $gray: #0E0000;
+  $light-gray: #F4F4F4;
+
+TXT
+
+file "app/assets/stylesheets/config/_bootstrap_variables.scss", <<~TXT
+  // This is where you override default Bootstrap variables
+  // 1. All Bootstrap variables are here => https://github.com/twbs/bootstrap/blob/master/scss/_variables.scss
+  // 2. These variables are defined with default value (see https://robots.thoughtbot.com/sass-default)
+  // 3. You can override them below!
+
+  // General style
+  $font-family-sans-serif:  $body-font;
+  $headings-font-family:    $headers-font;
+  $body-bg:                 $light-gray;
+  $font-size-base: 1rem;
+
+  // Colors
+  $body-color: $gray;
+  $primary:    $blue;
+  $success:    $green;
+  $info:       $yellow;
+  $danger:     $red;
+  $warning:    $orange;
+
+  // Buttons & inputs' radius
+  $border-radius:    2px;
+  $border-radius-lg: 2px;
+  $border-radius-sm: 2px;
+
+  // Override other variables below!
+  
+TXT
+
 inject_into_file "config/initializers/assets.rb", before: "# Precompile additional assets." do
   <<~RUBY
     Rails.application.config.assets.paths << Rails.root.join("node_modules")
@@ -131,6 +217,7 @@ after_bundle do
   # Simple Form
   ########################################
   generate("simple_form:install", "--bootstrap")
+  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config/simple_form.fr.yml > config/locales/simple_form.fr.yml"
 
   # Testing
   ########################################

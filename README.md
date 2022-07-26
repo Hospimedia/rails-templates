@@ -11,6 +11,10 @@ rails new \
   -m https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config.rb \
   CHANGE_THIS_TO_YOUR_RAILS_APP_NAME
 ```
-
-# Setup du projet
-- Ajouter le nom de domain dans /etc/hosts
+# Le template installe...
+- la config Docker classique ainsi que le fichier docker-compose.dev.yml
+- DB mysql ainsi que les points d'entrée dans phpMyAdmin en local
+- Testing : Byebug, Rspec avec le setup factory_bot_rails & faker
+- Gem : faraday (HTTP Client lib), font-awesome-sass, simple_form, rack-cors
+- Config local i18n FR + Fuseau Horaire Paris
+- Bootstrap
