@@ -223,6 +223,8 @@ after_bundle do
   gsub_file("Gemfile", '# gem "sassc-rails"', 'gem "sassc-rails"')
   gsub_file("Gemfile", 'gem "sqlite3", "~> 1.4"', '# gem "sqlite3", "~> 1.4"')
 
+  run "./dev.sh bundle install"
+
   # Simple Form
   ########################################
   # generate("simple_form:install", "--bootstrap")
