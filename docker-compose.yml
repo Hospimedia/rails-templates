@@ -25,7 +25,7 @@ services:
       BUNDLE_PATH: .bundle
       BUNDLE_DISABLE_SHARED_GEMS: '1'
       DATABASE_RESET: "true"
-      DATABASE_NAME: "CHANGE_NAME_development"
+      DATABASE_NAME: "CHANGE_DB_NAME_development"
       DATABASE_USERNAME: "root"
       DATABASE_PASSWORD: "admin"
       DATABASE_HOST: "mariadb_10"

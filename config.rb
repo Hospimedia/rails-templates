@@ -41,16 +41,6 @@ environment generators
 
 # Configs
 ########################################
-# inject_into_file "config/application.rb", after: '# config.eager_load_paths << Rails.root.join("extras")' do
-# <<~RUBY
-#       config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
-#       config.i18n.default_locale = :fr
-      
-#       config.time_zone = "Paris"
-#       config.active_record.default_timezone = :local
-# RUBY
-# end
-
 configs = <<~RUBY
   config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
   config.i18n.default_locale = :fr
@@ -61,6 +51,40 @@ RUBY
 environment configs
 
 run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/fr.yml > config/locales/fr.yml"
+
+# Doker
+########################################
+custom_db_name = ask("What do you want to call the db ?")
+custom_domain_name = ask("What do you want to call the domain ?")
+
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/database.yml > config/database.yml"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/Dockerfile > Dockerfile"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.dev.yml > docker-compose.dev.yml"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.yml > docker-compose.yml"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/start-app.sh > start-app.sh"
+run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/dev.sh > dev.sh"
+
+gsub_file("config/database.yml", "CHANGE_DB_NAME", "#{custom_db_name}")
+gsub_file("docker-compose.yml", "traefik.backend=CHANGE_NAME", "traefik.backend=#{custom_db_name}")
+gsub_file("docker-compose.yml", "traefik.frontend.rule=Host:CHANGE_NAME.dave", "traefik.frontend.rule=Host:#{custom_domain_name}.dave")
+gsub_file("docker-compose.yml", "CHANGE_DB_NAME", "#{custom_db_name}")
+
+run "chmod 775 dev.sh start-app.sh"
+
+inject_into_file "config/puma.rb", before: 'port ENV.fetch("PORT") { 3000 }' do
+  <<~RUBY
+    set_default_host '0.0.0.0'
+  RUBY
+end
+
+inject_into_file "config/environments/development.rb", after: "# config.action_cable.disable_request_forgery_protection = true" do
+  <<~RUBY
+
+    config.hosts << "#{custom_domain_name}.dave"
+  RUBY
+end
+
+run "sudo nano /etc/hosts" if yes?("Add now domain name in your /etc/hosts ? (You need add : #{custom_domain_name}.dave) Yes/No ?")
 
 # Assets
 ########################################
@@ -90,40 +114,6 @@ file "README.md", markdown_file_content, force: true
 # After bundle
 ########################################
 after_bundle do
-  # Doker
-  ########################################
-  custom_db_name = ask("What do you want to call the db ?")
-  custom_domain_name = ask("What do you want to call the domain ?")
-
-  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/database.yml > config/database.yml"
-  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/Dockerfile > Dockerfile"
-  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.dev.yml > docker-compose.dev.yml"
-  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.yml > docker-compose.yml"
-  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/start-app.sh > start-app.sh"
-  run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/dev.sh > dev.sh"
-
-  gsub_file("config/database.yml", "CHANGE_DB_NAME", "#{custom_db_name}_test")
-  gsub_file("docker-compose.yml", "traefik.backend=CHANGE_NAME", "traefik.backend=#{custom_db_name}")
-  gsub_file("docker-compose.yml", "traefik.frontend.rule=Host:CHANGE_NAME.dave", "traefik.frontend.rule=Host:#{custom_domain_name}.dave")
-  gsub_file("docker-compose.yml", "CHANGE_NAME_development", "#{custom_db_name}_development")
-
-  run "chmod 775 dev.sh start-app.sh"
-
-  inject_into_file "config/puma.rb", before: 'port ENV.fetch("PORT") { 3000 }' do
-    <<~RUBY
-      set_default_host '0.0.0.0'
-    RUBY
-  end
-
-  inject_into_file "config/environments/development.rb", after: "# config.action_cable.disable_request_forgery_protection = true" do
-    <<~RUBY
-
-      config.hosts << "#{custom_domain_name}.dave"
-    RUBY
-  end
-
-  run "sudo nano /etc/hosts" if yes?("Add now domain name in your /etc/hosts ? (You need add : #{custom_domain_name}.dave")
-
   # Gitignore
   ########################################
   append_file ".gitignore", <<~TXT
