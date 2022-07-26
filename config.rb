@@ -1,32 +1,5 @@
 run "if uname | grep -q 'Darwin'; then pgrep spring | xargs kill -9; fi"
 
-# Gemfile
-########################################
-inject_into_file "Gemfile", before: "group :development, :test do" do
-  <<~RUBY
-    gem "autoprefixer-rails"
-    gem 'mysql2', '~> 0.5'
-    gem 'rack-cors', '~> 1.1', '>= 1.1.1'
-    gem 'faraday', '~> 2.3'
-    gem "font-awesome-sass", "~> 6.1"
-    gem "simple_form", github: "heartcombo/simple_form"
-
-  RUBY
-end
-
-inject_into_file "Gemfile", after: 'gem "debug", platforms: %i[ mri mingw x64_mingw ]' do
-<<-RUBY
-    
-  gem 'byebug', '~> 9.0', '>= 9.0.5'
-  gem "rspec-rails"
-  gem "factory_bot_rails"
-  gem "faker"
-RUBY
-end
-
-gsub_file("Gemfile", '# gem "sassc-rails"', 'gem "sassc-rails"')
-gsub_file("Gemfile", 'gem "sqlite3", "~> 1.4"', '# gem "sqlite3", "~> 1.4"')
-
 # Configs
 ########################################
 configs = <<~RUBY
@@ -223,14 +196,43 @@ after_bundle do
     .DS_Store
   TXT
 
+  # Gemfile
+  ########################################
+  inject_into_file "Gemfile", before: "group :development, :test do" do
+    <<~RUBY
+      gem "autoprefixer-rails"
+      gem 'mysql2', '~> 0.5'
+      gem 'rack-cors', '~> 1.1', '>= 1.1.1'
+      gem 'faraday', '~> 2.3'
+      gem "font-awesome-sass", "~> 6.1"
+      gem "simple_form", github: "heartcombo/simple_form"
+
+    RUBY
+  end
+
+  inject_into_file "Gemfile", after: 'gem "debug", platforms: %i[ mri mingw x64_mingw ]' do
+  <<-RUBY
+      
+    gem 'byebug', '~> 9.0', '>= 9.0.5'
+    gem "rspec-rails"
+    gem "factory_bot_rails"
+    gem "faker"
+  RUBY
+  end
+
+  gsub_file("Gemfile", '# gem "sassc-rails"', 'gem "sassc-rails"')
+  gsub_file("Gemfile", 'gem "sqlite3", "~> 1.4"', '# gem "sqlite3", "~> 1.4"')
+
   # Simple Form
   ########################################
-  generate("simple_form:install", "--bootstrap")
+  # generate("simple_form:install", "--bootstrap")
+  run "./dev.sh bundle exec rails g simple_form:install --bootstrap"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config/simple_form.fr.yml > config/locales/simple_form.fr.yml"
 
   # Testing
   ########################################
-  generate("rspec:install")
+  # generate("rspec:install")
+  run "./dev.sh bundle exec rails g rspec:install"
   run "mkdir 'spec/support'"
   run "touch 'spec/factories.rb'"
   
