@@ -105,12 +105,24 @@ file "app/assets/stylesheets/application.scss", <<~TXT
 
   // Your CSS partials
   @import "components/index";
-
 TXT
 
 file "app/assets/stylesheets/components/_index.scss", <<~TXT
   // Import your components CSS files here.
+  @import "form_legend_clear";
+TXT
 
+file "app/assets/stylesheets/components/_form_legend_clear.scss", <<~TXT
+  // In bootstrap 5 legend floats left and requires the following element
+  // to be cleared. In a radio button or checkbox group the element after
+  // the legend will be the automatically generated hidden input; the fix
+  // in https://github.com/twbs/bootstrap/pull/30345 applies to the hidden
+  // input and has no visual effect. Here we try to fix matters by
+  // applying the clear to the div wrapping the first following radio button
+  // or checkbox.
+  legend ~ div.form-check:first-of-type {
+    clear: left;
+  }
 TXT
 
 file "app/assets/stylesheets/config/_fonts.scss", <<~TXT
@@ -130,7 +142,6 @@ file "app/assets/stylesheets/config/_fonts.scss", <<~TXT
   //        font-url('FontFile.ttf') format('truetype')
   // }
   // $my-font: "Font Name";
-
 TXT
 
 file "app/assets/stylesheets/config/_colors.scss", <<~TXT
@@ -144,7 +155,6 @@ file "app/assets/stylesheets/config/_colors.scss", <<~TXT
   $green: #1EDD88;
   $gray: #0E0000;
   $light-gray: #F4F4F4;
-
 TXT
 
 file "app/assets/stylesheets/config/_bootstrap_variables.scss", <<~TXT
@@ -173,13 +183,12 @@ file "app/assets/stylesheets/config/_bootstrap_variables.scss", <<~TXT
   $border-radius-sm: 2px;
 
   // Override other variables below!
-  
 TXT
 
-inject_into_file "config/initializers/assets.rb", before: "# Precompile additional assets." do
+inject_into_file "config/initializers/assets.rb", after: "# Rails.application.config.assets.paths << Emoji.images_path" do
   <<~RUBY
-    Rails.application.config.assets.paths << Rails.root.join("node_modules")
 
+    Rails.application.config.assets.paths << Rails.root.join("node_modules")
   RUBY
 end
 
