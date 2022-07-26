@@ -7,7 +7,7 @@ inject_into_file "Gemfile", before: "group :development, :test do" do
     gem "autoprefixer-rails"
     gem 'mysql2', '~> 0.5'
     gem 'rack-cors', '~> 1.1', '>= 1.1.1'
-    gem 'rest-client', '~> 2.1.0'
+    gem 'faraday', '~> 0.9.2'
     gem "font-awesome-sass", "~> 6.1"
     gem "simple_form", github: "heartcombo/simple_form"
 
@@ -27,17 +27,38 @@ end
 gsub_file("Gemfile", '# gem "sassc-rails"', 'gem "sassc-rails"')
 gsub_file("Gemfile", 'gem "sqlite3", "~> 1.4"', '# gem "sqlite3", "~> 1.4"')
 
+# Generators
+########################################
+generators = <<~RUBY
+  config.generators do |generate|
+    generate.assets false
+    generate.helper false
+    generate.test_framework :test_unit, fixture: false
+  end
+RUBY
+
+environment generators
+
 # Configs
 ########################################
-inject_into_file "config/application.rb", after: '# config.eager_load_paths << Rails.root.join("extras")' do
-<<~RUBY
-      config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
-      config.i18n.default_locale = :fr
+# inject_into_file "config/application.rb", after: '# config.eager_load_paths << Rails.root.join("extras")' do
+# <<~RUBY
+#       config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
+#       config.i18n.default_locale = :fr
       
-      config.time_zone = "Paris"
-      config.active_record.default_timezone = :local
+#       config.time_zone = "Paris"
+#       config.active_record.default_timezone = :local
+# RUBY
+# end
+
+configs = <<~RUBY
+  config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
+  config.i18n.default_locale = :fr
+  config.time_zone = "Paris"
+  config.active_record.default_timezone = :local
 RUBY
-end
+
+environment configs
 
 run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/fr.yml > config/locales/fr.yml"
 
@@ -65,30 +86,26 @@ markdown_file_content = <<~MARKDOWN
 MARKDOWN
 file "README.md", markdown_file_content, force: true
 
-# Generators
-########################################
-generators = <<~RUBY
-  config.generators do |generate|
-    generate.assets false
-    generate.helper false
-    generate.test_framework :test_unit, fixture: false
-  end
-RUBY
-
-environment generators
-
 ########################################
 # After bundle
 ########################################
 after_bundle do
   # Doker
   ########################################
+  custom_db_name = ask("What do you want to call the db ?")
+  custom_domain_name = ask("What do you want to call the domain ?")
+
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/database.yml > config/database.yml"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/Dockerfile > Dockerfile"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.dev.yml > docker-compose.dev.yml"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker-compose.yml > docker-compose.yml"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/start-app.sh > start-app.sh"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/dev.sh > dev.sh"
+
+  gsub_file("config/database.yml", "CHANGE_DB_NAME", "#{custom_db_name}_test")
+  gsub_file("docker-compose.yml", "traefik.backend=CHANGE_NAME", "traefik.backend=#{custom_db_name}")
+  gsub_file("docker-compose.yml", "traefik.frontend.rule=Host:CHANGE_NAME.dave", "traefik.frontend.rule=Host:#{custom_domain_name}.dave")
+  gsub_file("docker-compose.yml", "CHANGE_NAME_development", "#{custom_db_name}_development")
 
   run "chmod 775 dev.sh start-app.sh"
 
@@ -101,9 +118,11 @@ after_bundle do
   inject_into_file "config/environments/development.rb", after: "# config.action_cable.disable_request_forgery_protection = true" do
     <<~RUBY
 
-      config.hosts << "headerservice.dave"
+      config.hosts << "#{custom_domain_name}.dave"
     RUBY
   end
+
+  run "sudo nano /etc/hosts" if yes?("Add now domain name in your /etc/hosts ? (You need add : #{custom_domain_name}.dave")
 
   # Gitignore
   ########################################
@@ -129,42 +148,34 @@ after_bundle do
   # Simple Form
   ########################################
   generate("simple_form:install", "--bootstrap")
-  # run "./dev.sh bundle exec rails g simple_form:install --bootstrap"
 
   # Testing
   ########################################
   generate("rspec:install")
-  # run "./dev.sh bundle exec rails g rspec:install"
   run "mkdir 'spec/support'"
-  run "touch 'spec/support/factory_bot.rb'"
-  run "touch 'spec/support/chrome.rb'"
   run "touch 'spec/factories.rb'"
   
   append_file ".rspec", <<~TXT
     --format documentation
   TXT
-  
-  inject_into_file "spec/support/factory_bot.rb" do
-    <<~RUBY
-      RSpec.configure do |config|
-        config.include FactoryBot::Syntax::Methods
-      end
-    RUBY
-  end
-  
-  inject_into_file "spec/support/chrome.rb" do
-    <<~RUBY
-      RSpec.configure do |config|
-        config.before(:each, type: :system) do
-          if ENV["SHOW_BROWSER"] == "true"
-            driven_by :selenium_chrome
-          else
-            driven_by :selenium, using: :headless_chrome, screen_size: [1400, 1400]
-          end
+
+  file "spec/support/factory_bot.rb", <<~RUBY
+    RSpec.configure do |config|
+      config.include FactoryBot::Syntax::Methods
+    end
+  RUBY
+
+  file "spec/support/chrome.rb", <<~RUBY
+    RSpec.configure do |config|
+      config.before(:each, type: :system) do
+        if ENV["SHOW_BROWSER"] == "true"
+          driven_by :selenium_chrome
+        else
+          driven_by :selenium, using: :headless_chrome, screen_size: [1400, 1400]
         end
       end
-    RUBY
-  end
+    end
+  RUBY
 
   inject_into_file "spec/rails_helper.rb", after: "require 'spec_helper'" do
     <<-RUBY

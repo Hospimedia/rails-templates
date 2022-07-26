@@ -13,6 +13,4 @@ rails new \
 ```
 
 # Setup du projet
-- config/database.yml >> changer le nom de la DB de test
-- docker-compose.yml >> changer le nom du projet dans le fichier docker-compose.yml
 - Ajouter le nom de domain dans /etc/hosts
