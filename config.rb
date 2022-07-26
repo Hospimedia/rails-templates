@@ -257,11 +257,11 @@ after_bundle do
   RUBY
 
   inject_into_file "spec/rails_helper.rb", after: "require 'spec_helper'" do
-    <<-RUBY
+<<-RUBY
 
-      require_relative 'support/factory_bot'
-      require_relative 'support/chrome'
-    RUBY
+  require_relative 'support/factory_bot'
+  require_relative 'support/chrome'
+RUBY
   end
 
   run "./dev.sh up --build"
