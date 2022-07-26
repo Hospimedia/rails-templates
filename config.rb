@@ -223,7 +223,7 @@ after_bundle do
   gsub_file("Gemfile", '# gem "sassc-rails"', 'gem "sassc-rails"')
   gsub_file("Gemfile", 'gem "sqlite3", "~> 1.4"', '# gem "sqlite3", "~> 1.4"')
 
-  run "./dev.sh bundle install"
+  run "./dev.sh up --build"
 
   # Simple Form
   ########################################
@@ -267,8 +267,6 @@ after_bundle do
       require_relative 'support/chrome'
     RUBY
   end
-
-  run "./dev.sh up --build"
 
   # Yarn
   ########################################
