@@ -7,7 +7,7 @@ inject_into_file "Gemfile", before: "group :development, :test do" do
     gem "autoprefixer-rails"
     gem 'mysql2', '~> 0.5'
     gem 'rack-cors', '~> 1.1', '>= 1.1.1'
-    gem 'faraday', '~> 0.9.2'
+    # gem 'faraday', '~> 0.9.2'
     gem "font-awesome-sass", "~> 6.1"
     gem "simple_form", github: "heartcombo/simple_form"
 
@@ -50,7 +50,7 @@ configs = <<~RUBY
 
 RUBY
 
-environment configs
+environment configs, before: '# config.eager_load_paths << Rails.root.join("extras")'
 
 run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/fr.yml > config/locales/fr.yml"
 
