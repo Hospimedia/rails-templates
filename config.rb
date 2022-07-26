@@ -35,6 +35,7 @@ generators = <<~RUBY
     generate.helper false
     generate.test_framework :test_unit, fixture: false
   end
+
 RUBY
 
 environment generators
@@ -46,6 +47,7 @@ configs = <<~RUBY
   config.i18n.default_locale = :fr
   config.time_zone = "Paris"
   config.active_record.default_timezone = :local
+
 RUBY
 
 environment configs
@@ -80,7 +82,7 @@ end
 inject_into_file "config/environments/development.rb", after: "# config.action_cable.disable_request_forgery_protection = true" do
   <<~RUBY
 
-    config.hosts << "#{custom_domain_name}.dave"
+      config.hosts << "#{custom_domain_name}.dave"
   RUBY
 end
 
@@ -126,15 +128,6 @@ after_bundle do
     .DS_Store
   TXT
 
-  run "./dev.sh up --build"
-
-  # Yarn
-  ########################################
-  run "./dev.sh bundle exec yarn add bootstrap @popperjs/core"
-  append_file "app/javascript/application.js", <<~JS
-    import "bootstrap"
-  JS
-
   # Simple Form
   ########################################
   generate("simple_form:install", "--bootstrap")
@@ -174,6 +167,15 @@ after_bundle do
       require_relative 'support/chrome'
     RUBY
   end
+
+  run "./dev.sh up --build"
+
+  # Yarn
+  ########################################
+  run "./dev.sh bundle exec yarn add bootstrap @popperjs/core"
+  append_file "app/javascript/application.js", <<~JS
+    import "bootstrap"
+  JS
 
   # Git
   ########################################
