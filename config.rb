@@ -66,10 +66,9 @@ run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/d
 run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker/start-app.sh > start-app.sh"
 run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/docker/dev.sh > dev.sh"
 
-gsub_file("config/database.yml", "CHANGE_DB_NAME", "#{custom_db_name}")
-gsub_file("docker-compose.yml", "traefik.backend=CHANGE_NAME", "traefik.backend=#{custom_db_name}")
-gsub_file("docker-compose.yml", "traefik.frontend.rule=Host:CHANGE_NAME.dave", "traefik.frontend.rule=Host:#{custom_domain_name}.dave")
-gsub_file("docker-compose.yml", "CHANGE_DB_NAME", "#{custom_db_name}")
+gsub_file("config/database.yml", "CHANGE_DB_NAME", custom_db_name)
+gsub_file("docker-compose.yml", "CHANGE_DB_NAME", custom_db_name)
+gsub_file("docker-compose.yml", "CHANGE_DOMAIN_NAME", custom_domain_name)
 
 run "chmod 775 dev.sh start-app.sh"
 
@@ -86,7 +85,7 @@ inject_into_file "config/environments/development.rb", after: "# config.action_c
   RUBY
 end
 
-run "sudo nano /etc/hosts" if yes?("Add now domain name in your /etc/hosts ? (You need add : #{custom_domain_name}.dave) Yes/No ?")
+run "sudo nano /etc/hosts" if yes?("Add now domain name in your /etc/hosts ? (You need to add : #{custom_domain_name}.dave) Yes/No ?")
 
 # Assets
 ########################################

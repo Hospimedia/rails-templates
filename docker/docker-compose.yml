@@ -15,8 +15,8 @@ services:
     command: bundle exec puma -C config/puma.rb
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=CHANGE_NAME"
-      - "traefik.frontend.rule=Host:CHANGE_NAME.dave"
+      - "traefik.backend=CHANGE_DB_NAME"
+      - "traefik.frontend.rule=Host:CHANGE_DOMAIN_NAME.dave"
     volumes:
       - .:${DOCKER_APP_HOME:-/root}/app:rw,cached
       - $SSH_AUTH_SOCK:/ssh-agent
