@@ -199,6 +199,12 @@ gsub_file(
   '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">'
 )
 
+gsub_file(
+  "app/views/layouts/application.html.erb",
+  '<%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>',
+  '<%= javascript_include_tag "/assets/application.js", "data-turbo-track": "reload", defer: true %>'
+)
+
 # README
 ########################################
 markdown_file_content = <<~MARKDOWN
