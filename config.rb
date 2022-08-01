@@ -232,6 +232,7 @@ after_bundle do
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config/simple_form.fr.yml > config/locales/simple_form.fr.yml"
 
   run "./dev.sh up --build"
+  run "./dev.sh bundle install"
 
   # Testing
   ########################################
@@ -275,6 +276,21 @@ RUBY
   append_file "app/javascript/application.js", <<~JS
     import "bootstrap"
   JS
+
+  run "rm -rf package.json"
+  file "package.json", <<~TXT
+    {
+      "name": "app",
+      "private": "true",
+      "dependencies": {
+        "@hotwired/stimulus": "^3.1.0",
+        "@hotwired/turbo-rails": "^7.1.3",
+        "webpack": "^5.74.0",
+        "webpack-cli": "^4.10.0"
+      },
+      "scripts": { "build": "webpack --config webpack.config.js" }
+    }
+  TXT
 
   # Git
   ########################################
