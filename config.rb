@@ -5,7 +5,6 @@ run "if uname | grep -q 'Darwin'; then pgrep spring | xargs kill -9; fi"
 inject_into_file "Gemfile", before: "group :development, :test do" do
   <<~RUBY
     gem "autoprefixer-rails"
-    gem 'mysql2', '~> 0.5'
     gem 'rack-cors', '~> 1.1', '>= 1.1.1'
     gem 'faraday', '~> 2.3'
     gem "font-awesome-sass", "~> 6.1"
@@ -25,7 +24,6 @@ RUBY
 end
 
 gsub_file("Gemfile", '# gem "sassc-rails"', 'gem "sassc-rails"')
-gsub_file("Gemfile", 'gem "sqlite3", "~> 1.4"', '# gem "sqlite3", "~> 1.4"')
 
 # Configs
 ########################################
