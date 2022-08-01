@@ -231,9 +231,11 @@ after_bundle do
   generate("simple_form:install", "--bootstrap")
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config/simple_form.fr.yml > config/locales/simple_form.fr.yml"
 
+  run "./dev.sh up --build"
+
   # Testing
   ########################################
-  generate("rspec:install")
+  run "./dev.sh bundle exec rails g rspec:install"
   run "mkdir 'spec/support'"
   run "touch 'spec/factories.rb'"
   
@@ -266,8 +268,6 @@ after_bundle do
   require_relative 'support/chrome'
 RUBY
   end
-
-  run "./dev.sh up --build"
 
   # Yarn
   ########################################
