@@ -214,6 +214,23 @@ file "README.md", markdown_file_content, force: true
 # After bundle
 ########################################
 after_bundle do
+  # package.json
+  ########################################
+  run "rm -rf package.json"
+  file "package.json", <<~TXT
+    {
+      "name": "app",
+      "private": "true",
+      "dependencies": {
+        "@hotwired/stimulus": "^3.1.0",
+        "@hotwired/turbo-rails": "^7.1.3",
+        "webpack": "^5.74.0",
+        "webpack-cli": "^4.10.0"
+      },
+      "scripts": { "build": "webpack --config webpack.config.js" }
+    }
+  TXT
+
   # Gitignore
   ########################################
   append_file ".gitignore", <<~TXT
@@ -225,14 +242,17 @@ after_bundle do
     *.swp
     .DS_Store
   TXT
+  
+  # Launch Container
+  ########################################
+  run "./dev.sh up --build"
+  run "./dev.sh bundle install"
 
   # Simple Form
   ########################################
-  generate("simple_form:install", "--bootstrap")
+  # generate("simple_form:install", "--bootstrap")
+  run "./dev.sh bundle exec rails g simple_form:install --bootstrap"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config/simple_form.fr.yml > config/locales/simple_form.fr.yml"
-
-  run "./dev.sh up --build"
-  run "./dev.sh bundle install"
 
   # Testing
   ########################################
@@ -276,21 +296,8 @@ RUBY
   append_file "app/javascript/application.js", <<~JS
     import "bootstrap"
   JS
-
-  run "rm -rf package.json"
-  file "package.json", <<~TXT
-    {
-      "name": "app",
-      "private": "true",
-      "dependencies": {
-        "@hotwired/stimulus": "^3.1.0",
-        "@hotwired/turbo-rails": "^7.1.3",
-        "webpack": "^5.74.0",
-        "webpack-cli": "^4.10.0"
-      },
-      "scripts": { "build": "webpack --config webpack.config.js" }
-    }
-  TXT
+  
+  run "sudo apt-get update && sudo apt-get install yarn"
 
   # Git
   ########################################
