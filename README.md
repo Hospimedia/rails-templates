@@ -7,9 +7,8 @@ Get a rails app ready with Doker config, Bootstrap, Simple form, debugging gems 
 ```bash
 rails new \
   --database mysql \
-  -j webpack \
   --skip-test \
-  -m https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config.rb \
+  -m https://raw.githubusercontent.com/Hospimedia/rails-templates/rails_7_template/config.rb \
   CHANGE_THIS_TO_YOUR_RAILS_APP_NAME
 ```
 # Le template installe...

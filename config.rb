@@ -182,26 +182,26 @@ file "app/assets/stylesheets/config/_bootstrap_variables.scss", <<~TXT
   // Override other variables below!
 TXT
 
-inject_into_file "config/initializers/assets.rb", after: "# Rails.application.config.assets.paths << Emoji.images_path" do
-  <<~RUBY
+# inject_into_file "config/initializers/assets.rb", after: "# Rails.application.config.assets.paths << Emoji.images_path" do
+#   <<~RUBY
 
-    Rails.application.config.assets.paths << Rails.root.join("node_modules")
-  RUBY
-end
+#     Rails.application.config.assets.paths << Rails.root.join("node_modules")
+#   RUBY
+# end
 
 # Layout
 ########################################
-gsub_file(
-  "app/views/layouts/application.html.erb",
-  '<meta name="viewport" content="width=device-width,initial-scale=1">',
-  '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">'
-)
+# gsub_file(
+#   "app/views/layouts/application.html.erb",
+#   '<meta name="viewport" content="width=device-width,initial-scale=1">',
+#   '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">'
+# )
 
-gsub_file(
-  "app/views/layouts/application.html.erb",
-  '<%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>',
-  '<%= javascript_include_tag "/assets/application.js", "data-turbo-track": "reload", defer: true %>'
-)
+# gsub_file(
+#   "app/views/layouts/application.html.erb",
+#   '<%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>',
+#   '<%= javascript_include_tag "/assets/application.js", "data-turbo-track": "reload", defer: true %>'
+# )
 
 # README
 ########################################
@@ -250,7 +250,6 @@ after_bundle do
 
   # Simple Form
   ########################################
-  # generate("simple_form:install", "--bootstrap")
   run "./dev.sh bundle exec rails g simple_form:install --bootstrap"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config/simple_form.fr.yml > config/locales/simple_form.fr.yml"
 
