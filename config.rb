@@ -9,6 +9,7 @@ inject_into_file "Gemfile", before: "group :development, :test do" do
     gem 'faraday', '~> 2.3'
     gem "font-awesome-sass", "~> 6.1"
     gem "simple_form", github: "heartcombo/simple_form"
+    gem 'bootstrap', '~> 5.1.3'
 
   RUBY
 end
@@ -23,10 +24,19 @@ inject_into_file "Gemfile", after: 'gem "debug", platforms: %i[ mri mingw x64_mi
 RUBY
 end
 
+gem_group :test do
+  gem "capybara"
+  gem "selenium-webdriver"
+  gem "webdrivers"
+end
+
 gsub_file("Gemfile", '# gem "sassc-rails"', 'gem "sassc-rails"')
 
 # Configs
 ########################################
+environment "config.sass.inline_source_maps = true", env: 'development'
+run "rm -r tmp/cache/assets"
+
 configs = <<~RUBY
   config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
   config.i18n.default_locale = :fr
@@ -76,12 +86,7 @@ inject_into_file "config/puma.rb", before: 'port ENV.fetch("PORT") { 3000 }' do
   RUBY
 end
 
-inject_into_file "config/environments/development.rb", after: "# config.action_cable.disable_request_forgery_protection = true" do
-  <<~RUBY
-
-      config.hosts << "#{custom_domain_name}.dave"
-  RUBY
-end
+environment "config.hosts << '#{custom_domain_name}.dave'", env: "development"
 
 run "sudo nano /etc/hosts" if yes?("Add now domain name in your /etc/hosts ? (You need to add : #{custom_domain_name}.dave) Yes/No ?")
 
@@ -97,7 +102,7 @@ file "app/assets/stylesheets/application.scss", <<~TXT
   @import "config/bootstrap_variables";
 
   // External libraries
-  @import "bootstrap/scss/bootstrap";
+  @import "bootstrap";
   @import "font-awesome";
 
   // Your CSS partials
@@ -189,18 +194,19 @@ inject_into_file "config/initializers/assets.rb", after: "# Rails.application.co
   RUBY
 end
 
+inject_into_file "config/initializers/assets.rb", after: "# Rails.application.config.assets.precompile += %w( admin.js admin.css )" do
+  <<~RUBY
+
+    Rails.application.config.assets.precompile += %w( application.scss )
+  RUBY
+end
+
 # Layout
 ########################################
 gsub_file(
   "app/views/layouts/application.html.erb",
   '<meta name="viewport" content="width=device-width,initial-scale=1">',
   '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">'
-)
-
-gsub_file(
-  "app/views/layouts/application.html.erb",
-  '<%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>',
-  '<%= javascript_include_tag "/assets/application.js", "data-turbo-track": "reload", defer: true %>'
 )
 
 # README
@@ -214,23 +220,6 @@ file "README.md", markdown_file_content, force: true
 # After bundle
 ########################################
 after_bundle do
-  # package.json
-  ########################################
-  # run "rm -rf package.json"
-  # file "package.json", <<~TXT
-  #   {
-  #     "name": "app",
-  #     "private": "true",
-  #     "dependencies": {
-  #       "@hotwired/stimulus": "^3.1.0",
-  #       "@hotwired/turbo-rails": "^7.1.3",
-  #       "webpack": "^5.74.0",
-  #       "webpack-cli": "^4.10.0"
-  #     },
-  #     "scripts": { "build": "webpack --config webpack.config.js" }
-  #   }
-  # TXT
-
   # Gitignore
   ########################################
   append_file ".gitignore", <<~TXT
@@ -250,7 +239,6 @@ after_bundle do
 
   # Simple Form
   ########################################
-  # generate("simple_form:install", "--bootstrap")
   run "./dev.sh bundle exec rails g simple_form:install --bootstrap"
   run "curl -L https://raw.githubusercontent.com/Hospimedia/rails-templates/main/config/simple_form.fr.yml > config/locales/simple_form.fr.yml"
 
@@ -290,14 +278,16 @@ after_bundle do
 RUBY
   end
 
-  # Yarn
+  # Bootstrap / Popper
   ########################################
-  run "./dev.sh bundle exec yarn add bootstrap @popperjs/core"
+  append_file "config/importmap.rb", <<~RUBY
+    pin "bootstrap", to: "https://ga.jspm.io/npm:bootstrap@5.1.3/dist/js/bootstrap.esm.js"
+    pin "@popperjs/core", to: "https://ga.jspm.io/npm:@popperjs/core@2.11.2/lib/index.js"
+  RUBY
+
   append_file "app/javascript/application.js", <<~JS
     import "bootstrap"
   JS
-  
-  run "sudo apt-get update && sudo apt-get install yarn"
 
   # Git
   ########################################
