@@ -9,24 +9,31 @@ inject_into_file "Gemfile", before: "group :development, :test do" do
     gem 'faraday', '~> 2.3'
     gem "font-awesome-sass", "~> 6.1"
     gem "simple_form", github: "heartcombo/simple_form"
+    gem 'bootstrap', '~> 5.1.3'
 
   RUBY
 end
 
-inject_into_file "Gemfile", after: 'gem "debug", platforms: %i[ mri mingw x64_mingw ]' do
-<<-RUBY
-    
+gem_group :development, :test do
   gem 'byebug', '~> 9.0', '>= 9.0.5'
   gem "rspec-rails"
   gem "factory_bot_rails"
   gem "faker"
-RUBY
+end
+
+gem_group :test do
+  gem "capybara"
+  gem "selenium-webdriver"
+  gem "webdrivers"
 end
 
 gsub_file("Gemfile", '# gem "sassc-rails"', 'gem "sassc-rails"')
 
 # Configs
 ########################################
+environment "config.sass.inline_source_maps = true", env: 'development'
+run "rm -r tmp/cache/assets"
+
 configs = <<~RUBY
   config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
   config.i18n.default_locale = :fr
@@ -76,12 +83,7 @@ inject_into_file "config/puma.rb", before: 'port ENV.fetch("PORT") { 3000 }' do
   RUBY
 end
 
-inject_into_file "config/environments/development.rb", after: "# config.action_cable.disable_request_forgery_protection = true" do
-  <<~RUBY
-
-      config.hosts << "#{custom_domain_name}.dave"
-  RUBY
-end
+environment "config.hosts << '#{custom_domain_name}.dave'", env: "development"
 
 run "sudo nano /etc/hosts" if yes?("Add now domain name in your /etc/hosts ? (You need to add : #{custom_domain_name}.dave) Yes/No ?")
 
@@ -182,20 +184,21 @@ file "app/assets/stylesheets/config/_bootstrap_variables.scss", <<~TXT
   // Override other variables below!
 TXT
 
-# inject_into_file "config/initializers/assets.rb", after: "# Rails.application.config.assets.paths << Emoji.images_path" do
-#   <<~RUBY
+inject_into_file "config/initializers/assets.rb", after: "# Rails.application.config.assets.paths << Emoji.images_path" do
+  <<~RUBY
 
-#     Rails.application.config.assets.paths << Rails.root.join("node_modules")
-#   RUBY
-# end
+    Rails.application.config.assets.paths << Rails.root.join("node_modules")
+    Rails.application.config.assets.precompile += %w( application.scss )
+  RUBY
+end
 
 # Layout
 ########################################
-# gsub_file(
-#   "app/views/layouts/application.html.erb",
-#   '<meta name="viewport" content="width=device-width,initial-scale=1">',
-#   '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">'
-# )
+gsub_file(
+  "app/views/layouts/application.html.erb",
+  '<meta name="viewport" content="width=device-width,initial-scale=1">',
+  '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">'
+)
 
 # gsub_file(
 #   "app/views/layouts/application.html.erb",
@@ -214,23 +217,6 @@ file "README.md", markdown_file_content, force: true
 # After bundle
 ########################################
 after_bundle do
-  # package.json
-  ########################################
-  # run "rm -rf package.json"
-  # file "package.json", <<~TXT
-  #   {
-  #     "name": "app",
-  #     "private": "true",
-  #     "dependencies": {
-  #       "@hotwired/stimulus": "^3.1.0",
-  #       "@hotwired/turbo-rails": "^7.1.3",
-  #       "webpack": "^5.74.0",
-  #       "webpack-cli": "^4.10.0"
-  #     },
-  #     "scripts": { "build": "webpack --config webpack.config.js" }
-  #   }
-  # TXT
-
   # Gitignore
   ########################################
   append_file ".gitignore", <<~TXT
@@ -247,6 +233,9 @@ after_bundle do
   ########################################
   run "./dev.sh up --build"
   run "./dev.sh bundle install"
+  run "./dev.sh bundle exec rails importmap:install"
+  run "./dev.sh bundle exec rails turbo:install"
+  run "./dev.sh bundle exec rails stimulus:install"
 
   # Simple Form
   ########################################
@@ -289,14 +278,16 @@ after_bundle do
 RUBY
   end
 
-  # Yarn
+  # Bootstrap / Popper
   ########################################
-  run "./dev.sh bundle exec yarn add bootstrap @popperjs/core"
+  append_file "config/importmap.rb", <<~RUBY
+    pin "bootstrap", to: "https://ga.jspm.io/npm:bootstrap@5.1.3/dist/js/bootstrap.esm.js"
+    pin "@popperjs/core", to: "https://ga.jspm.io/npm:@popperjs/core@2.11.2/lib/index.js"
+  RUBY
+
   append_file "app/javascript/application.js", <<~JS
     import "bootstrap"
   JS
-  
-  run "sudo apt-get update && sudo apt-get install yarn"
 
   # Git
   ########################################
