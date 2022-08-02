@@ -14,11 +14,14 @@ inject_into_file "Gemfile", before: "group :development, :test do" do
   RUBY
 end
 
-gem_group :development, :test do
+inject_into_file "Gemfile", after: 'gem "debug", platforms: %i[ mri mingw x64_mingw ]' do
+<<-RUBY
+    
   gem 'byebug', '~> 9.0', '>= 9.0.5'
   gem "rspec-rails"
   gem "factory_bot_rails"
   gem "faker"
+RUBY
 end
 
 gem_group :test do
@@ -188,6 +191,12 @@ inject_into_file "config/initializers/assets.rb", after: "# Rails.application.co
   <<~RUBY
 
     Rails.application.config.assets.paths << Rails.root.join("node_modules")
+  RUBY
+end
+
+inject_into_file "config/initializers/assets.rb", after: "# Rails.application.config.assets.precompile += %w( admin.js admin.css )" do
+  <<~RUBY
+
     Rails.application.config.assets.precompile += %w( application.scss )
   RUBY
 end
@@ -199,12 +208,6 @@ gsub_file(
   '<meta name="viewport" content="width=device-width,initial-scale=1">',
   '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">'
 )
-
-# gsub_file(
-#   "app/views/layouts/application.html.erb",
-#   '<%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>',
-#   '<%= javascript_include_tag "/assets/application.js", "data-turbo-track": "reload", defer: true %>'
-# )
 
 # README
 ########################################
@@ -233,9 +236,9 @@ after_bundle do
   ########################################
   run "./dev.sh up --build"
   run "./dev.sh bundle install"
-  run "./dev.sh bundle exec rails importmap:install"
-  run "./dev.sh bundle exec rails turbo:install"
-  run "./dev.sh bundle exec rails stimulus:install"
+  # run "./dev.sh bundle exec rails importmap:install"
+  # run "./dev.sh bundle exec rails turbo:install"
+  # run "./dev.sh bundle exec rails stimulus:install"
 
   # Simple Form
   ########################################
