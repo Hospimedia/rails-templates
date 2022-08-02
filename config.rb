@@ -102,7 +102,7 @@ file "app/assets/stylesheets/application.scss", <<~TXT
   @import "config/bootstrap_variables";
 
   // External libraries
-  @import "bootstrap/scss/bootstrap";
+  @import "bootstrap";
   @import "font-awesome";
 
   // Your CSS partials
@@ -236,9 +236,6 @@ after_bundle do
   ########################################
   run "./dev.sh up --build"
   run "./dev.sh bundle install"
-  # run "./dev.sh bundle exec rails importmap:install"
-  # run "./dev.sh bundle exec rails turbo:install"
-  # run "./dev.sh bundle exec rails stimulus:install"
 
   # Simple Form
   ########################################
