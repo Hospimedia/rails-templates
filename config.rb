@@ -223,6 +223,8 @@ after_bundle do
   # Gitignore
   ########################################
   append_file ".gitignore", <<~TXT
+  
+    .byebug_history
 
     # Ignore file containing credentials.
     docker-compose.dev.yml
