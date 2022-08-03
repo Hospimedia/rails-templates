@@ -223,8 +223,15 @@ after_bundle do
   # Gitignore
   ########################################
   append_file ".gitignore", <<~TXT
-  
+
+    /public/assets
     .byebug_history
+    /public/packs
+    /public/packs-test
+    /node_modules
+    /yarn-error.log
+    yarn-debug.log*
+    .yarn-integrity
 
     # Ignore file containing credentials.
     docker-compose.dev.yml
