@@ -290,12 +290,13 @@ RUBY
   # Bootstrap / Popper
   ########################################
   append_file "config/importmap.rb", <<~RUBY
-    pin "bootstrap", to: "https://ga.jspm.io/npm:bootstrap@5.1.3/dist/js/bootstrap.esm.js"
-    pin "@popperjs/core", to: "https://ga.jspm.io/npm:@popperjs/core@2.11.2/lib/index.js"
+    pin "@popperjs/core", to: "https://ga.jspm.io/npm:@popperjs/core@2.11.0/dist/esm/index.js"
+    pin "bootstrap", to: "https://ga.jspm.io/npm:bootstrap@5.2.0/dist/js/bootstrap.esm.js"
   RUBY
 
   append_file "app/javascript/application.js", <<~JS
-    import "bootstrap"
+    import "@popperjs/core"
+    import * as bootstrap from "bootstrap"
   JS
 
   # Git
