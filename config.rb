@@ -4,6 +4,7 @@ run "if uname | grep -q 'Darwin'; then pgrep spring | xargs kill -9; fi"
 ########################################
 inject_into_file "Gemfile", before: "group :development, :test do" do
   <<~RUBY
+    gem 'dotenv-rails', '~> 2.7', '>= 2.7.6'
     gem "autoprefixer-rails"
     gem 'rack-cors', '~> 1.1', '>= 1.1.1'
     gem 'faraday', '~> 2.3'
